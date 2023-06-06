@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: devfile-sample-acpi
+spec:
+  replicas: 1
+  selector: {}
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - image: quay.io/redhat-user-workloads-stage/oandriie-tenant/devfile-sample/devfile-sample-acpi@sha256:8855d14976a263e8208af6d3a1c3d87017f59b5ec842d45ffa738e1c4240cc1c
+        name: my-nodejs
+        resources: {}
+status: {}
