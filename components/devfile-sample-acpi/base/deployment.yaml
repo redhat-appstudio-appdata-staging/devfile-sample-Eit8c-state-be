@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/created-by: application-service
+    app.kubernetes.io/instance: devfile-sample-acpi
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: devfile-sample-acpi
+    app.kubernetes.io/part-of: devfile-sample
+  name: devfile-sample-acpi
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: nodejs-app
+      app.kubernetes.io/instance: devfile-sample-acpi
+      app.kubernetes.io/name: tekton-results-api
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nodejs-app
+        app.kubernetes.io/instance: devfile-sample-acpi
+        app.kubernetes.io/name: tekton-results-api
+    spec:
+      containers:
+      - args:
+        - -api_addr
+        - tekton-results-api-service.oandriie-tenant.svc.cluster.local:50051
+        - -auth_mode
+        - token
+        env:
+        - name: DB_HOST
+          value: tekton-results-postgres-service.oandriie-tenant.svc.cluster.local
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_USER
+              name: tekton-results-postgres
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: tekton-results-postgres
+        - name: DB_NAME
+          value: tekton-results
+        image: docker.io/aandrienko/tekton-api
+        name: my-nodejs
+        ports:
+        - containerPort: 3001
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        volumeMounts:
+        - mountPath: /etc/tekton/results
+          name: config
+          readOnly: true
+      volumes:
+      - configMap:
+          name: tekton-results-api-config
+        name: config
+status: {}
